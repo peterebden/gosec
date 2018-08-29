@@ -43,6 +43,7 @@ type Issue struct {
 	File       string `json:"file"`       // File name we found it in
 	Code       string `json:"code"`       // Impacted code line
 	Line       string `json:"line"`       // Line number in file
+	Column     string `json:"column"`     // Column number in line
 }
 
 // MetaData is embedded in all gosec rules. The Severity, Confidence and What message
@@ -98,6 +99,7 @@ func NewIssue(ctx *Context, node ast.Node, ruleID, desc string, severity Score, 
 	if start != end {
 		line = fmt.Sprintf("%d-%d", start, end)
 	}
+	col := strconv.Itoa(fobj.Position(node.Pos()).Column)
 
 	// #nosec
 	if file, err := os.Open(fobj.Name()); err == nil {
@@ -113,6 +115,7 @@ func NewIssue(ctx *Context, node ast.Node, ruleID, desc string, severity Score, 
 	return &Issue{
 		File:       name,
 		Line:       line,
+		Column:     col,
 		RuleID:     ruleID,
 		What:       desc,
 		Confidence: confidence,
